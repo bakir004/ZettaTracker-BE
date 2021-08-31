@@ -3,16 +3,16 @@ const mongoose = require("mongoose");
 const ticketSchema = mongoose.Schema({
     name: String,
     description: String,
-    
+
     assigneeId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    assignedPersonnel: [{
+    reporterId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    }],
-    project: {
+    },
+    projectId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Project"
     },
@@ -23,8 +23,6 @@ const ticketSchema = mongoose.Schema({
     dateCreated: String,
     dateUpdated: String,
     dueDate: String,
-
-    icon: String
 })
 
 const Ticket = mongoose.model("Ticket", ticketSchema);

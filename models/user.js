@@ -16,9 +16,6 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Project"
     }],
-
-    avatar: String,
-    color: String,
 })
 
 const User = mongoose.model("User", userSchema);

@@ -20,6 +20,9 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Project"
     }],
+
+    role: String,
+    permissions: Object
 })
 
 userSchema.pre("save", async function(next) {

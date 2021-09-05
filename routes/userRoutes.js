@@ -3,6 +3,7 @@ const router = express.Router()
 const { User } = require("../models/user")
 const bodyParser = require('body-parser')
 const passport = require("passport")
+const rolePermissions = require("../rolePermissions")
  
 const jsonParser = bodyParser.json()
 
@@ -45,6 +46,9 @@ router.post("/register", jsonParser, isNotLoggedIn, (req, res) => {
 
         assignedTickets: req.body.assignedTickets,
         assignedProjects: req.body.assignedProjects,
+
+        role: req.body.role,
+        permissions: rolePermissions[req.body.role.toUpperCase()]
     }
 
     let user = new User(newUser);
@@ -66,6 +70,9 @@ router.put("/user", jsonParser, (req, res) => {
 
         assignedTickets: req.body.assignedTickets,
         assignedProjects: req.body.assignedProjects,
+
+        role: req.body.role,
+        permissions: rolePermissions[req.body.role.toUpperCase()]
     }
 
     User.updateOne({_id: req.body._id}, newUser, {}, (err, doc) => {

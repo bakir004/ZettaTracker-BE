@@ -89,6 +89,7 @@ initialize(passport, getUserByEmail, getUserById)
 
 app.use(require("./routes/ticketRoutes"))
 app.use(require("./routes/userRoutes"))
+app.use(require("./routes/projectRoutes"))
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {

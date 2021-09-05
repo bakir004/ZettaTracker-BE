@@ -12,6 +12,7 @@ const isLoggedIn = (req, res, next) => {
     }
     return res.json({redirect: "/"})
 }
+
 const isNotLoggedIn = (req, res, next) => {
     if(!req.session.isLoggedIn) {
         return next()

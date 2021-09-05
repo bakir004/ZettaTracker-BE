@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const bcrypt = require("bcrypt")
 
 const userSchema = mongoose.Schema({
     firstName: String,
@@ -6,7 +7,10 @@ const userSchema = mongoose.Schema({
     gender: String,
 
     email: String,
-    password: String,
+    password: {
+        type: String,
+        minlength: 8
+    },
     
     assignedTickets: [{
         type: mongoose.Schema.Types.ObjectId,
@@ -16,6 +20,12 @@ const userSchema = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Project"
     }],
+})
+
+userSchema.pre("save", async function(next) {
+    const salt = await bcrypt.genSalt()
+    this.password = await bcrypt.hash(this.password, salt)
+    next()
 })
 
 const User = mongoose.model("User", userSchema);

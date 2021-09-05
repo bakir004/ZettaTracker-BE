@@ -66,6 +66,15 @@ const users = [
         assignedTickets: [
             "5d67d0a888d4fc276cd2a430", "5d67d0a888d4fc276cd2a431"
         ]
+    },
+    {
+        _id: "6d67d0a888d4fc276cd2a432",
+        firstName: "Bakir",
+        lastName: "Cinjarevic",
+        gender: "Male",
+        email: "bakeroni11@gmail.com",
+        password: "bakeroni11",
+        assignedTickets: []
     }
 ]
 

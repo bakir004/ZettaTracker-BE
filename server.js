@@ -2,10 +2,22 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const config = require("./config").get(process.env.NODE_ENV);
-const { Ticket } = require("./models/ticket")
-const bodyParser = require('body-parser')
- 
-const jsonParser = bodyParser.json()
+const passport = require("passport")
+const { User } = require("./models/user")
+const session = require("express-session")
+const LocalStrategy = require('passport-local').Strategy
+const flash = require("connect-flash")
+const bcrypt = require("bcrypt")
+
+//#region SETTINGS
+app.use(session({
+    secret: "SUPERSECRETPASSWORD123",
+    resave: false,
+    saveUninitialized: false
+}))
+app.use(passport.initialize())
+app.use(passport.session())
+app.use(flash())
 
 mongoose.Promise = global.Promise;
 mongoose.connect(config.DATABASE, {
@@ -22,85 +34,61 @@ app.use(function (req, res, next) {
     next();
 });
 
-//#region TICKET ENDPOINTS
+const initialize = (passport, getUserByEmail, getUserById) => {
+    const authenticateUser = async (req, email, password, done) => {
+        const user = await getUserByEmail(email)
+        // console.log("==================================")
+        // console.log("Email: " + email)
+        // console.log("Password: " + password)
+        // console.log("User: " + user)
 
-app.get("/ticket", jsonParser, (req, res) => {
-    Ticket.find({}, (err, docs) => {
-        if(err) return res.send(err)
-        return res.json(docs)
-    })
-})
+        if(!user) {
+            // console.log("No user flash")
+            req.flash("loginAuthMessage", "No user found")
+            return done(null, false)
+        }
 
-app.get("/ticket/:id", jsonParser, (req, res) => {
-    Ticket.findById(req.params.id, (err, doc) => {
-        if(err) return res.send(err)
-        return res.json(doc)
-    })
-})
-
-app.post("/ticket", jsonParser, (req, res) => {
-    const newTicket = {
-        name: req.body.name,
-        description: req.body.description,
-        
-        assigneeId: req.body.assigneeId,
-        reporterId: req.body.reporterId,
-        projectId: req.body.projectId,
-
-        priority: req.body.priority,
-        status: req.body.status,
-
-        dateCreated: req.body.dateCreated,
-        dateUpdated: req.body.dateUpdated,
-        dueDate: req.body.dueDate
+        try {
+            if(await bcrypt.compare(password, user.password)) {
+                // console.log("Success flash")
+                req.flash("loginAuthMessage", "Successful login!")
+                return done(null, user)
+            } else {
+                // console.log("Password incorrect flash")
+                req.flash("loginAuthMessage", "Password incorrect")
+                return done(null, false)
+            }
+        } catch (e) {
+            return done(e)
+        }
     }
+    passport.use(new LocalStrategy({usernameField: "email", passwordField: "password", passReqToCallback: true,},  authenticateUser))
+    passport.serializeUser((user, done) => done(null, user._id))
+    passport.deserializeUser((id, done) => { return done(null, getUserById(id)) })
+}
 
-    let ticket = new Ticket(newTicket);
-
-    ticket.save((err, doc) => {
-        if (err) return res.status(400).send(err);
-        return res.status(200).send("ok");
+const getUserByEmail = async (email) => {
+    let user
+    await User.findOne({email: email}).exec().then((res) => {
+        if(res) user = new User(res)
+        else user = null
     })
-})
+    return user
+}
 
-app.put("/ticket", jsonParser, (req, res) => {
-    const newTicket = {
-        name: req.body.name,
-        description: req.body.description,
-        
-        assigneeId: req.body.assigneeId,
-        reporterId: req.body.reporterId,
-        projectId: req.body.projectId,
-
-        priority: req.body.priority,
-        status: req.body.status,
-
-        dateCreated: req.body.dateCreated,
-        dateUpdated: req.body.dateUpdated,
-        dueDate: req.body.dueDate
-    }
-
-    Ticket.updateOne({_id: req.body._id}, newTicket, {}, (err, doc) => {
-        if (err) return res.send(err)
-        return res.status(200).send("ok")
+const getUserById = async (id) => {
+    let user
+    await User.findOne({_id: id}).exec().then((res) => {
+        user = res
     })
-})
-
-app.delete("/ticket", (req, res) => {
-    Ticket.deleteMany({}, (err) => {
-        if(err) return res.status(400).send(err);
-        return res.status(200).send("ok");
-    })
-})
-
-app.delete("/ticket/:id", (req, res) => {
-    Ticket.findByIdAndDelete(req.params.id, (err) => {
-        if(err) return res.status(400).send(err);
-        return res.status(200).send("ok");
-    })
-})
-
+    return user
+}
 //#endregion
+
+initialize(passport, getUserByEmail, getUserById)
+
+app.use(require("./routes/ticketRoutes"))
+app.use(require("./routes/userRoutes"))
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {

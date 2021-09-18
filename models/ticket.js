@@ -4,18 +4,23 @@ const ticketSchema = mongoose.Schema({
     name: String,
     description: String,
 
-    assigneeId: {
+    assignee: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    reporterId: {
+    reporter: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
     },
-    projectId: {
+    project: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Project"
     },
+
+    subtasks: [{
+        name: String,
+        status: String
+    }],
 
     priority: String,
     status: String,

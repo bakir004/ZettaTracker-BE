@@ -6,14 +6,27 @@ const bodyParser = require('body-parser')
 const jsonParser = bodyParser.json()
 
 router.get("/ticket", jsonParser, (req, res) => {
-    Ticket.find({}, (err, docs) => {
+    Ticket.find({}).populate("reporter").populate("assignee").populate("project").exec((err, docs) => {
         if(err) return res.send(err)
         return res.json(docs)
     })
 })
 
+// .populate({
+// 	path:     'comments',			
+// 	populate: { path:  'user',
+// 		    model: 'users' }
+//   })
+
+// User.find()
+//   .where('fb.id')
+//   .in([3225, 623423, 6645345])
+//   .exec(function (err, records) {
+//     //make magic happen
+//   });
+
 router.get("/ticket/:id", jsonParser, (req, res) => {
-    Ticket.findById(req.params.id, (err, doc) => {
+    Ticket.findById(req.params.id).populate("reporter").populate("assignee").populate("project").exec((err, doc) => {
         if(err) return res.send(err)
         return res.json(doc)
     })
@@ -24,12 +37,14 @@ router.post("/ticket", jsonParser, (req, res) => {
         name: req.body.name,
         description: req.body.description,
         
-        assigneeId: req.body.assigneeId,
-        reporterId: req.body.reporterId,
-        projectId: req.body.projectId,
+        assignee: req.body.assignee,
+        reporter: req.body.reporter,
+        project: req.body.project,
 
         priority: req.body.priority,
         status: req.body.status,
+
+        subtasks: req.body.subtasks,
 
         dateCreated: req.body.dateCreated,
         dateUpdated: req.body.dateUpdated,
@@ -49,12 +64,14 @@ router.put("/ticket", jsonParser, (req, res) => {
         name: req.body.name,
         description: req.body.description,
         
-        assigneeId: req.body.assigneeId,
-        reporterId: req.body.reporterId,
-        projectId: req.body.projectId,
+        assignee: req.body.assignee,
+        reporter: req.body.reporter,
+        project: req.body.project,
 
         priority: req.body.priority,
         status: req.body.status,
+
+        subtasks: req.body.subtasks,
 
         dateCreated: req.body.dateCreated,
         dateUpdated: req.body.dateUpdated,
@@ -63,7 +80,7 @@ router.put("/ticket", jsonParser, (req, res) => {
 
     Ticket.updateOne({_id: req.body._id}, newTicket, {}, (err, doc) => {
         if (err) return res.send(err)
-        return res.status(200).send("ok")
+        return res.json(doc)
     })
 })
 

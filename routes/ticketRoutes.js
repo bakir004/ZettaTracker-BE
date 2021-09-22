@@ -26,7 +26,7 @@ router.get("/ticket", jsonParser, (req, res) => {
 //   });
 
 router.get("/ticket/:id", jsonParser, (req, res) => {
-    Ticket.findById(req.params.id).populate("reporter").populate("assignee").populate("project").exec((err, doc) => {
+    Ticket.findById(req.params.id).populate({path: "comments", populate: {path: "user", model: "User"}}).populate("reporter").populate("assignee").populate("project").exec((err, doc) => {
         if(err) return res.send(err)
         return res.json(doc)
     })
@@ -45,6 +45,8 @@ router.post("/ticket", jsonParser, (req, res) => {
         status: req.body.status,
 
         subtasks: req.body.subtasks,
+
+        comments: req.body.comments,
 
         dateCreated: req.body.dateCreated,
         dateUpdated: req.body.dateUpdated,
@@ -72,6 +74,8 @@ router.put("/ticket", jsonParser, (req, res) => {
         status: req.body.status,
 
         subtasks: req.body.subtasks,
+
+        comments: req.body.comments,
 
         dateCreated: req.body.dateCreated,
         dateUpdated: req.body.dateUpdated,

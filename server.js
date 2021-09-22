@@ -8,6 +8,9 @@ const session = require("express-session")
 const LocalStrategy = require('passport-local').Strategy
 const flash = require("connect-flash")
 const bcrypt = require("bcrypt")
+const bodyParser = require('body-parser')
+const jsonParser = bodyParser.json()
+const cloudinary = require("cloudinary")
 
 //#region SETTINGS
 app.use(session({
@@ -24,6 +27,12 @@ mongoose.connect(config.DATABASE, {
     useNewUrlParser: true,
     useUnifiedTopology: true
 });
+
+cloudinary.config({
+    cloud_name: "dhstlph6l",
+    api_key: "182687823729481",
+    api_secret: "Ad7fjC8jrd4KqxMXJ51_vywZZD4"
+})
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
@@ -88,6 +97,20 @@ initialize(passport, getUserByEmail, getUserById)
 app.use(require("./routes/ticketRoutes"))
 app.use(require("./routes/userRoutes"))
 app.use(require("./routes/projectRoutes"))
+
+app.post("/cloudinary/remove", jsonParser, (req, res) => {
+    const {public_id, format} = req.body
+    let id = public_id + "." + format;
+    let resourceType = "raw"
+    if(format === "jpg" || format === "png" || format === "gif" || format === "webp") {
+        id = public_id
+        resourceType = "image"
+    }
+    cloudinary.v2.uploader.destroy(public_id, {invalidate: true, resource_type: resourceType}, async (err, response) => {
+        if(err) return res.send(err)
+        return res.json(response)
+    })
+})
 
 const port = process.env.PORT || 3001;
 app.listen(port, () => {

@@ -22,6 +22,15 @@ const ticketSchema = mongoose.Schema({
         status: String
     }],
 
+    comments: [{
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "User"
+        },
+        timestamp: String,
+        text: String
+    }],
+
     priority: String,
     status: String,
     

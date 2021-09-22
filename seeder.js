@@ -1,11 +1,11 @@
+const config = require("./config").get(process.env.NODE_ENV);
 const mongoose = require("mongoose");
 const { Ticket } = require("./models/ticket");
 const { User } = require("./models/user");
 const { Project } = require("./models/project");
-const rolePermissions = require("./rolePermissions");
 const { UserInfo } = require("./models/userInfo");
 const { statuses, priorities } = require("./enums")
-const config = require("./config").get(process.env.NODE_ENV);
+const rolePermissions = require("./rolePermissions");
 
 mongoose.connect(config.DATABASE, {
     useNewUrlParser: true,
@@ -37,6 +37,19 @@ const tickets = [
             },
         ],
 
+        comments: [
+            {
+                user: "6d67d0a888d4fc276cd2a430",
+                timestamp: "18/09/2021",
+                text: "Good comment, can't wait to see it on the frontend"
+            },
+            {
+                user: "6d67d0a888d4fc276cd2a432",
+                timestamp: "18/10/2021",
+                text: "Better comment, can't wait to see it on the frontend"
+            }
+        ],
+
         dateCreated: "27/02/2004",
         dateUpdated: "31/08/2021",
         dueDate: "01/09/2021"
@@ -63,6 +76,19 @@ const tickets = [
                 name: "Add create ticket endpoint",
                 status: statuses.OPEN
             },
+        ],
+
+        comments: [
+            {
+                user: "6d67d0a888d4fc276cd2a430",
+                timestamp: "18/09/2021",
+                text: "Good comment, can't wait to see it on the frontend"
+            },
+            {
+                user: "6d67d0a888d4fc276cd2a432",
+                timestamp: "18/10/2021",
+                text: "Better comment, can't wait to see it on the frontend"
+            }
         ],
 
         dateCreated: "27/02/2004",

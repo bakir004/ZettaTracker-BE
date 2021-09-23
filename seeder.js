@@ -50,6 +50,8 @@ const tickets = [
             }
         ],
 
+        attachments: [],
+
         dateCreated: "27/02/2004",
         dateUpdated: "31/08/2021",
         dueDate: "01/09/2021"
@@ -90,6 +92,8 @@ const tickets = [
                 text: "Better comment, can't wait to see it on the frontend"
             }
         ],
+
+        attachments: [],
 
         dateCreated: "27/02/2004",
         dateUpdated: "31/08/2021",

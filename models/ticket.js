@@ -31,6 +31,14 @@ const ticketSchema = mongoose.Schema({
         text: String
     }],
 
+    attachments: [{
+        name: String,
+        url: String,
+        format: String,
+        public_id: String,
+        icon: Object
+    }],
+
     priority: String,
     status: String,
     

@@ -48,6 +48,8 @@ router.post("/ticket", jsonParser, (req, res) => {
 
         comments: req.body.comments,
 
+        attachments: req.body.attachments,
+
         dateCreated: req.body.dateCreated,
         dateUpdated: req.body.dateUpdated,
         dueDate: req.body.dueDate
@@ -76,6 +78,8 @@ router.put("/ticket", jsonParser, (req, res) => {
         subtasks: req.body.subtasks,
 
         comments: req.body.comments,
+
+        attachments: req.body.attachments,
 
         dateCreated: req.body.dateCreated,
         dateUpdated: req.body.dateUpdated,
